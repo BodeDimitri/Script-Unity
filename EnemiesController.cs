@@ -35,14 +35,25 @@ public class EnemiesController : MonoBehaviour
         currentDistance = Vector3.Distance(transform.position, player.transform.position); //Metodo que mede a distancia entre dois pontos no mundo, a posição do nosso inimigo ate a posição do nosso player
         followPlayer();
         AttackPlayer();
+        takeDamage(10f);
     }
 
 
     protected virtual void AttackPlayer() { //Permite ser acessado somente pelas classes filhas e o virtual permite ser sobrescrito pelas filhas
 
     }
-    void takeDamage() {
-        
+    public void takeDamage(float amount) { //Amount e a vida que ela vai perder
+        currentHealth -= amount; //Tira a vida baseado no dano que vai sofrer
+        currentHealth = Mathf.Clamp(currentHealth, 0, Health); //Impedi que o HP do monstro fique negativo
+        if (currentHealth <= 0) { //Caso esteja abaixo de zero
+            enemyAnimator.SetBool("Death", true); //Vai fazer a animação de morte
+            LevelSystem.Instance.SetExperience((double)Xp); //Isso e usado para mandar a informação para o (Level System) que queremos aumentar o xp baseado no Xp que o monstro dropa
+            Invoke("destroyEnemy", 2.0f); //Metodo invoke faz algo daqui alguns segundos, aceita como parametro o metodo e em seguida o tempo
+        }
+    }
+
+    private void destroyEnemy() { //Metodo usado para destruir um objeto/player/monstro
+        Destroy(gameObject); //Destroy e usado para destruir algo e leva como parametro o que vai ser destruido
     }
 
     void doDamage() {
